@@ -357,7 +357,7 @@ typedef struct
 {
     tinfl_decompressor m_decomp;
     mz_uint m_dict_ofs, m_dict_avail, m_first_call, m_has_flushed;
-    int m_window_bits;
+    int m_window_bits, check;
     mz_uint8 m_dict[TINFL_LZ_DICT_SIZE];
     tinfl_status m_last_status;
 } inflate_state;
@@ -429,10 +429,22 @@ int mz_inflateReset(mz_streamp pStream)
     return MZ_OK;
 }
 
+int mz_inflateValidate(mz_streamp pStream, int check)
+{
+    if ((!pStream) || (!pStream->state))
+        return MZ_STREAM_ERROR;
+
+    inflate_state *pState = (inflate_state *)pStream->state;
+
+    pState->check = check;
+
+    return MZ_OK;
+}
+
 int mz_inflate(mz_streamp pStream, int flush)
 {
     inflate_state *pState;
-    mz_uint n, first_call, decomp_flags = TINFL_FLAG_COMPUTE_ADLER32;
+    mz_uint n, first_call, decomp_flags = 0;
     size_t in_bytes, out_bytes, orig_avail_in;
     tinfl_status status;
 
@@ -446,6 +458,8 @@ int mz_inflate(mz_streamp pStream, int flush)
     pState = (inflate_state *)pStream->state;
     if (pState->m_window_bits > 0)
         decomp_flags |= TINFL_FLAG_PARSE_ZLIB_HEADER;
+    if (pState->check > 0)
+        decomp_flags |= TINFL_FLAG_COMPUTE_ADLER32;
     orig_avail_in = pStream->avail_in;
 
     first_call = pState->m_first_call;

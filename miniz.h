@@ -366,6 +366,9 @@ MINIZ_EXPORT int mz_inflateInit2(mz_streamp pStream, int window_bits);
 /* Quickly resets a compressor without having to reallocate anything. Same as calling mz_inflateEnd() followed by mz_inflateInit()/mz_inflateInit2(). */
 MINIZ_EXPORT int mz_inflateReset(mz_streamp pStream);
 
+/* Turn on or off the adler-32 checksum computation and comparison. */
+MINIZ_EXPORT int mz_inflateValidate(mz_streamp pStream, int check);
+
 /* Decompresses the input stream to the output, consuming only as much of the input as needed, and writing as much to the output as possible. */
 /* Parameters: */
 /*   pStream is the stream to read from and write to. You must initialize/update the next_in, avail_in, next_out, and avail_out members. */
@@ -451,6 +454,7 @@ typedef void *const voidpc;
 #define inflateInit mz_inflateInit
 #define inflateInit2 mz_inflateInit2
 #define inflateReset mz_inflateReset
+#define inflateValidate mz_inflateValidate
 #define inflate mz_inflate
 #define inflateEnd mz_inflateEnd
 #define uncompress mz_uncompress
