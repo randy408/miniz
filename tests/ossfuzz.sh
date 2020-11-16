@@ -20,7 +20,7 @@
 
 mkdir build
 cd build
-cmake .. -DAMALGAMATE_SOURCES=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_FUZZERS=ON
+cmake .. -DBUILD_SHARED_LIBS=OFF -DBUILD_FUZZERS=ON
 make -j$(nproc)
 cd ..
 
@@ -28,8 +28,8 @@ zip $OUT/seed_corpus.zip *.*
 
 for f in $(find $SRC -name '*_fuzzer.c'); do
     b=$(basename -s .c $f)
-    $CC $CFLAGS -Ibuild/amalgamation $f -c -o /tmp/$b.o
-    $CXX $CXXFLAGS -stdlib=libc++ -Ibuild/amalgamation /tmp/$b.o -o $OUT/$b $LIB_FUZZING_ENGINE ./build/libminiz.a
+    $CC $CFLAGS -I. $f -c -o /tmp/$b.o
+    $CXX $CXXFLAGS -stdlib=libc++ -I. /tmp/$b.o -o $OUT/$b $LIB_FUZZING_ENGINE ./build/libminiz.a
     rm -f /tmp/$b.o
     ln -sf $OUT/seed_corpus.zip $OUT/${b}_seed_corpus.zip
 done
