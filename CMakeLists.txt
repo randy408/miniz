@@ -11,7 +11,7 @@ endif()
 set(MINIZ_API_VERSION 2)
 set(MINIZ_MINOR_VERSION 1)
 set(MINIZ_PATCH_VERSION 0)
-set(MINIZ_VERSION 
+set(MINIZ_VERSION
     ${MINIZ_API_VERSION}.${MINIZ_MINOR_VERSION}.${MINIZ_PATCH_VERSION})
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
@@ -64,14 +64,14 @@ if(AMALGAMATE_SOURCES)
              "${AMAL_MINIZ_C}" "\n#endif // MINIZ_HEADER_FILE_ONLY\n")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/amalgamation/miniz.h "${AMAL_MINIZ_H}")
     add_library(${PROJECT_NAME} INTERFACE)
-    
+
     # Might not be a good idea to force this on the library user
     # as it could bloat the global namespace
     # https://github.com/libevent/libevent/issues/460
-    # target_compile_definitions(${PROJECT_NAME} 
+    # target_compile_definitions(${PROJECT_NAME}
     #     INTERFACE $<$<C_COMPILER_ID:GNU>:_GNU_SOURCE>)
-    
-    set_property(TARGET ${PROJECT_NAME} APPEND 
+
+    set_property(TARGET ${PROJECT_NAME} APPEND
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES
       $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/amalgamation>
       $<INSTALL_INTERFACE:include>
@@ -106,20 +106,20 @@ else(AMALGAMATE_SOURCES)
 
   set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${MINIZ_VERSION})
   set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION ${MINIZ_API_VERSION})
-  
+
   target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include>
   )
-  
+
   file(GLOB INSTALL_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
   list(APPEND
        INSTALL_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_export.h)
 endif(AMALGAMATE_SOURCES)
 
 if(NOT BUILD_HEADER_ONLY)
-  target_compile_definitions(${PROJECT_NAME} 
+  target_compile_definitions(${PROJECT_NAME}
     PRIVATE $<$<C_COMPILER_ID:GNU>:_GNU_SOURCE>)
 endif()
 
@@ -212,6 +212,7 @@ if(BUILD_FUZZERS)
   set(UNCOMPRESS2_FUZZER_SRC_LIST "${FUZZ_MAIN_SRC}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/uncompress2_fuzzer.c")
   set(COMPRESS_FUZZER_SRC_LIST "${FUZZ_MAIN_SRC}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/compress_fuzzer.c")
   set(SMALL_FUZZER_SRC_LIST "${FUZZ_MAIN_SRC}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/small_fuzzer.c")
+  set(LARGE_FUZZER_SRC_LIST "${FUZZ_MAIN_SRC}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/large_fuzzer.c")
   set(ZIP_FUZZER_SRC_LIST "${FUZZ_MAIN_SRC}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/zip_fuzzer.c")
 
   add_executable(checksum_fuzzer ${CHECKSUM_FUZZER_SRC_LIST})
@@ -231,6 +232,9 @@ if(BUILD_FUZZERS)
 
   add_executable(small_fuzzer ${SMALL_FUZZER_SRC_LIST})
   target_link_libraries(small_fuzzer miniz)
+
+  add_executable(large_fuzzer ${LARGE_FUZZER_SRC_LIST})
+  target_link_libraries(large_fuzzer miniz)
 
   add_executable(zip_fuzzer ${ZIP_FUZZER_SRC_LIST})
   target_link_libraries(zip_fuzzer miniz)
