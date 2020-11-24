@@ -48,7 +48,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
         if ((file_stat.m_method) && (file_stat.m_method != MZ_DEFLATED)) continue;
 
-        int index = mz_zip_reader_locate_file(&zip, file_stat.m_filename, NULL, MZ_ZIP_FLAG_CASE_SENSITIVE);
+        flags = MZ_ZIP_FLAG_CASE_SENSITIVE | MZ_ZIP_FLAG_IGNORE_PATH;
+        int index = mz_zip_reader_locate_file(&zip, file_stat.m_filename, NULL, flags);
 
         if(index == -1)
         {
