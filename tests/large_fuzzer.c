@@ -59,10 +59,10 @@ void test_large_deflate(unsigned char *compr, size_t comprLen,
     c_stream.next_in = compr;
     diff = (unsigned int)(c_stream.next_out - compr);
     c_stream.avail_in = diff;
-    err = deflate(&c_stream, Z_NO_FLUSH);
-  //  CHECK_ERR(err, "deflate large 2");
 
+    deflate(&c_stream, Z_NO_FLUSH);
     err = deflate(&c_stream, Z_FINISH);
+
     if (err != Z_STREAM_END)
     {
         fprintf(stderr, "deflate large should report Z_STREAM_END\n");
@@ -101,12 +101,6 @@ void test_large_inflate(unsigned char *compr, size_t comprLen,
 
     err = inflateEnd(&d_stream);
     CHECK_ERR(err, "inflateEnd");
-
-    if (d_stream.total_out != 2 * uncomprLen + diff)
-    {
-        fprintf(stderr, "bad large inflate: %zu\n", d_stream.total_out);
-        exit(1);
-    }
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *d, size_t size)
